@@ -12,7 +12,7 @@
     "scheme_id": "pmjay",
     "scheme_name": "Ayushman Bharat – PM-JAY",
     "department": "Health & Family Welfare",
-    "source_url": "unknown",
+    "source_url": "https://hem.nha.gov.in/HBP.pdf",
     "doc_version": "unknown",
     "published_date": "unknown",
     "file_name": "Ayushman Bharat – PM-JAY.pdf"
@@ -21,7 +21,7 @@
     "scheme_id": "nsp_prematric",
     "scheme_name": "National Scholarship Portal — Pre-Matric Scheme",
     "department": "Education",
-    "source_url": "unknown",
+    "source_url": "https://scholarships.gov.in/public/schemeGuidelines/NMMSSGuidelines.pdf",
     "doc_version": "unknown",
     "published_date": "unknown",
     "file_name": "National Scholarship Portal — Pre-Matric Scheme.pdf"
@@ -30,7 +30,7 @@
     "scheme_id": "pmkisan",
     "scheme_name": "PM-KISAN",
     "department": "Agriculture & Farmers Welfare",
-    "source_url": "unknown",
+    "source_url": "https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines%28English%29.pdf",
     "doc_version": "unknown",
     "published_date": "unknown",
     "file_name": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi).pdf"
@@ -39,7 +39,7 @@
     "scheme_id": "pmay_g",
     "scheme_name": "PMAY-G",
     "department": "Rural Development",
-    "source_url": "unknown",
+    "source_url": "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
     "doc_version": "unknown",
     "published_date": "unknown",
     "file_name": "PMAY-G (Pradhan Mantri Awas Yojana – Gramin).pdf"
@@ -48,7 +48,7 @@
     "scheme_id": "pmay_u",
     "scheme_name": "PMAY-U",
     "department": "Housing & Urban Affairs",
-    "source_url": "unknown",
+    "source_url": "https://pmaymis.gov.in/PMAYMIS2_2024/PDF/Operational_Guidelines_of_PMAY-U.pdf",
     "doc_version": "unknown",
     "published_date": "unknown",
     "file_name": "PMAY-U (Pradhan Mantri Awas Yojana – Urban).pdf"
@@ -66,7 +66,7 @@
     "scheme_id": "pmuy",
     "scheme_name": "PM Ujjwala Yojana",
     "department": "Petroleum & Natural Gas",
-    "source_url": "unknown",
+    "source_url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2021/oct/doc202110101.pdf",
     "doc_version": "unknown",
     "published_date": "unknown",
     "file_name": "PM_Ujjawal_Yojana.pdf"
