@@ -1,0 +1,27 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Generated data: ignore build output, keep reviewed files
+# (data/schemes.json and data/rules/ stay trackable; the vector DB lives in data/chroma/)
+data/*
+!data/.gitkeep
+!data/schemes.json
+!data/rules/
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
