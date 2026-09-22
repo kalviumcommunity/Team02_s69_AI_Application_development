@@ -28,6 +28,10 @@ LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
 CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
 
+# Chunking configuration
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "900"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
+
 # Paths
 DOCS_DIR = _resolve_path(os.getenv("DOCS_DIR", "documents"))
 VECTOR_DB_DIR = _resolve_path(os.getenv("VECTOR_DB_DIR", "data/chroma"))
