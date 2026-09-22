@@ -1,5 +1,3 @@
-import json
-
 from src.ingestion.chunker import chunk_page
 
 

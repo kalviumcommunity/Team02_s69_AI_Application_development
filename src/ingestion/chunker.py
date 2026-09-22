@@ -48,6 +48,7 @@ def _is_heading(line: str) -> bool:
 
     return letters.isupper() and len(letters) >= 3
 
+
 def _find_section_titles(text: str) -> list[tuple[int, str]]:
     """Return character positions paired with the active section title."""
     current_section = ""
@@ -74,7 +75,7 @@ def _find_section_titles(text: str) -> list[tuple[int, str]]:
 def _split_long_text(text: str, max_size: int) -> list[str]:
     """Split text into pieces no larger than max_size."""
     return [
-        text[start : start + max_size]
+        text[start:start + max_size]
         for start in range(0, len(text), max_size)
     ]
 
@@ -152,12 +153,13 @@ def chunk_text(
         # The overlap itself can make the current chunk too large.
         if len(current) > chunk_size:
             chunks.append(current[:chunk_size].strip())
-            current = current[chunk_size - chunk_overlap :].strip()
+            current = current[chunk_size - chunk_overlap:].strip()
 
     if current:
         chunks.append(current.strip())
 
     return [chunk for chunk in chunks if chunk]
+
 
 def chunk_page(
     scheme_id: str,
