@@ -32,6 +32,11 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "900"))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
 
+# RAG confidence configuration
+RAG_CONFIDENCE_THRESHOLD = float(
+    os.getenv("RAG_CONFIDENCE_THRESHOLD", "0.30")
+)
+
 # Paths
 DOCS_DIR = _resolve_path(os.getenv("DOCS_DIR", "documents"))
 VECTOR_DB_DIR = _resolve_path(os.getenv("VECTOR_DB_DIR", "data/chroma"))

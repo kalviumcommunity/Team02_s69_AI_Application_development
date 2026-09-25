@@ -57,3 +57,25 @@ Run the Streamlit app (once it exists) from the project root with `python -m str
 ## CI
 
 GitHub Actions runs `flake8` and `pytest` on every push and pull request to `main` and `develop` (`.github/workflows/ci.yml`).
+
+## RAG Confidence Guardrails
+
+SchemeLens AI uses a configurable retrieval-confidence threshold to avoid
+sending weakly related questions to the language model.
+
+The initial threshold is set to `0.30` in `src/config.py`.
+
+This starting value was selected by testing representative in-scope and
+off-topic queries. PM-KISAN and PMAY-G queries produced scores above the
+threshold, while clearly unrelated questions such as weather and general
+knowledge queries produced lower scores.
+
+If the highest retrieved chunk score is below the threshold, the system
+returns an `insufficient_information` response without calling the LLM.
+
+The system also checks the generated response for citations. If no valid
+citation is present, the response is converted to the same
+`insufficient_information` response.
+
+Threshold calibration against a larger evaluation set is deferred to a
+future iteration.

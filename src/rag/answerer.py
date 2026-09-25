@@ -3,7 +3,8 @@
 The main public function is ``answer_question(query)``. It returns a
 dictionary with the following keys:
 
-- ``answer``: The generated answer containing chunk citations such as [1].
+- ``status``: ``"answered"`` or ``"insufficient_information"``.
+- ``answer``: The generated answer or fixed refusal message.
 - ``citations``: Citation metadata for the chunks referenced by the answer.
 - ``retrieved_chunks``: The top retrieved chunks used as context.
 - ``top_score``: The relevance score of the highest-ranked chunk.
@@ -16,13 +17,25 @@ from typing import Any
 
 from openai import OpenAI
 
-from src.config import CHAT_MODEL, LLM_API_KEY, LLM_BASE_URL
+from src.config import (
+    CHAT_MODEL,
+    LLM_API_KEY,
+    LLM_BASE_URL,
+    RAG_CONFIDENCE_THRESHOLD,
+)
 from src.indexing.embedder import OpenAIEmbedder
 from src.indexing.vector_store import VectorStore
+from src.rag.guardrails import is_low_confidence
 from src.rag.prompt import SYSTEM_PROMPT, build_user_prompt
 
 
 CITATION_PATTERN = re.compile(r"\[(\d+)\]")
+
+INSUFFICIENT_INFORMATION_MESSAGE = (
+    "The provided documents do not contain enough information to answer "
+    "this question. Please contact the relevant department or visit the "
+    "nearest Common Service Centre (CSC) for further assistance."
+)
 
 
 class QuestionAnswerer:
@@ -45,15 +58,21 @@ class QuestionAnswerer:
             top_k=5,
         )
 
-        if not retrieved_chunks:
+        if is_low_confidence(
+            retrieved_chunks,
+            RAG_CONFIDENCE_THRESHOLD,
+        ):
+
             return {
-                "answer": (
-                    "The provided documents do not contain enough "
-                    "information to answer this question."
-                ),
+                "status": "insufficient_information",
+                "answer": INSUFFICIENT_INFORMATION_MESSAGE,
                 "citations": [],
-                "retrieved_chunks": [],
-                "top_score": None,
+                "retrieved_chunks": retrieved_chunks,
+                "top_score": (
+                    retrieved_chunks[0]["score"]
+                    if retrieved_chunks
+                    else None
+                ),
             }
 
         response = self.llm_client.chat.completions.create(
@@ -93,7 +112,17 @@ class QuestionAnswerer:
             retrieved_chunks,
         )
 
+        if not citations:
+            return {
+                "status": "insufficient_information",
+                "answer": INSUFFICIENT_INFORMATION_MESSAGE,
+                "citations": [],
+                "retrieved_chunks": retrieved_chunks,
+                "top_score": retrieved_chunks[0]["score"],
+            }
+
         return {
+            "status": "answered",
             "answer": answer,
             "citations": citations,
             "retrieved_chunks": retrieved_chunks,
