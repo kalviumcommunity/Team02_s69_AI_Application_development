@@ -25,11 +25,18 @@ Requires Python 3.10 or newer.
    ```bash
    pip install -r requirements.txt
    ```
-4. Create your local settings file and add your API key:
+4. Create your local settings file:
    ```bash
    cp .env.example .env        # Windows: copy .env.example .env
    ```
-   `.env` is git-ignored. Never commit keys.
+   `.env` is git-ignored. Never commit keys. Fill in two separate keys —
+   see [API keys](#api-keys) below for why there are two and where to get
+   each one free:
+   - `EMBEDDING_API_KEY` — a Google AI Studio key (free tier). Everyone on
+     the team must use this same provider/model, since the index can only
+     be searched correctly with the model that built it.
+   - `CHAT_API_KEY` — any OpenAI-compatible chat provider/key you have.
+     This one does not need to match your teammates'.
 5. Check everything works:
    ```bash
    pytest
@@ -41,8 +48,8 @@ Requires Python 3.10 or newer.
    python -m src.pipeline
    ```
    This calls the embeddings API once per chunk, so it needs a real
-   `LLM_API_KEY` in `.env` and will use API quota. If you just want to work
-   on ingestion or chunking without an API key or without re-embedding
+   `EMBEDDING_API_KEY` in `.env` and will use API quota. If you just want to
+   work on ingestion or chunking without an API key or without re-embedding
    everything, skip the indexing step:
    ```bash
    python -m src.pipeline --skip-index
@@ -50,12 +57,28 @@ Requires Python 3.10 or newer.
    CI runs this flag automatically as a smoke test, since it has no API key.
    Each step can also be run on its own: `python -m src.ingestion.run_ingestion`,
    `python -m src.ingestion.run_chunking`, `python -m src.indexing.build_index`.
-7. Ask a question from the command line:
+7. Ask a question from the command line (needs `CHAT_API_KEY` too):
    ```bash
    python -m src.rag.ask "Who is eligible for PM-KISAN?"
    ```
 
 Run the Streamlit app (once it exists) from the project root with `python -m streamlit run app/main.py`. Using `python -m` puts the project root on the import path so `from src...` imports work.
+
+### API keys
+
+SchemeLens AI uses two independent OpenAI-compatible API credentials,
+configured separately in `.env`:
+
+| | Used for | Must match across the team? | Default |
+|---|---|---|---|
+| `EMBEDDING_API_KEY` / `EMBEDDING_BASE_URL` / `EMBEDDING_MODEL` | Building the vector index and embedding each query at search time | **Yes** | Google Gemini's `gemini-embedding-001`, via its OpenAI-compatible endpoint (free tier at [aistudio.google.com](https://aistudio.google.com/)) |
+| `CHAT_API_KEY` / `CHAT_BASE_URL` / `CHAT_MODEL` | Generating the final answer text from retrieved context | No — any provider works | OpenAI `gpt-4o-mini` (change freely, e.g. to Groq, OpenRouter, or another free/available key) |
+
+The embedding side must be consistent because a query embedded with a
+different model than the one that built the index will not retrieve
+correctly — vectors from different models are not comparable. The chat side
+has no such constraint: each call is independent, so any teammate can point
+it at whatever OpenAI-compatible chat provider and key they have.
 
 ### Known limitation: scanned pages
 
@@ -104,6 +127,14 @@ returns an `insufficient_information` response without calling the LLM.
 The system also checks the generated response for citations. If no valid
 citation is present, the response is converted to the same
 `insufficient_information` response.
+
+**⚠ This threshold was calibrated against the OpenAI `text-embedding-3-small`
+model.** Since the default embedding model changed to Google's
+`gemini-embedding-001`, different similarity-score distributions are likely
+— a threshold tuned for one embedding model is not guaranteed to behave the
+same way on another. Re-run the same in-scope/off-topic spot checks against
+the new default before trusting this threshold, ideally as part of building
+the evaluation question set.
 
 Threshold calibration against a larger evaluation set is deferred to a
 future iteration.

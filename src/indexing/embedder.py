@@ -6,11 +6,21 @@ import time
 
 from openai import OpenAI
 
-from src.config import EMBEDDING_MODEL, LLM_API_KEY, LLM_BASE_URL
+from src.config import (
+    EMBEDDING_API_KEY,
+    EMBEDDING_BASE_URL,
+    EMBEDDING_MODEL,
+)
 
 
 class OpenAIEmbedder:
-    """Create text embeddings using an OpenAI-compatible client."""
+    """Create text embeddings using an OpenAI-compatible client.
+
+    Defaults to Google's Gemini embedding model via its OpenAI-compatible
+    endpoint (see ``src/config.py``). Whatever model builds the index must
+    also be used to embed queries at search time, so this should not be
+    changed per-developer the way the chat model can be.
+    """
 
     def __init__(
         self,
@@ -18,9 +28,9 @@ class OpenAIEmbedder:
         batch_size: int = 64,
         max_retries: int = 3,
     ) -> None:
-        if not LLM_API_KEY:
+        if not EMBEDDING_API_KEY:
             raise ValueError(
-                "LLM_API_KEY is not configured. "
+                "EMBEDDING_API_KEY is not configured. "
                 "Set it in the local .env file."
             )
 
@@ -29,8 +39,8 @@ class OpenAIEmbedder:
         self.max_retries = max_retries
 
         self.client = OpenAI(
-            api_key=LLM_API_KEY,
-            base_url=LLM_BASE_URL,
+            api_key=EMBEDDING_API_KEY,
+            base_url=EMBEDDING_BASE_URL,
         )
 
     def _embed_batch(self, texts: list[str]) -> list[list[float]]:
