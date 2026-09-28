@@ -25,3 +25,6 @@ jobs:
 
       - name: Test (pytest)
         run: pytest
+
+      - name: Pipeline smoke test (ingestion + chunking, no API key needed)
+        run: python -m src.pipeline --skip-index

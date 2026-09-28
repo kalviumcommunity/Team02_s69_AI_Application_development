@@ -35,8 +35,35 @@ Requires Python 3.10 or newer.
    pytest
    flake8 src app tests
    ```
+6. Build the knowledge base (one command runs ingestion, chunking and
+   indexing in sequence):
+   ```bash
+   python -m src.pipeline
+   ```
+   This calls the embeddings API once per chunk, so it needs a real
+   `LLM_API_KEY` in `.env` and will use API quota. If you just want to work
+   on ingestion or chunking without an API key or without re-embedding
+   everything, skip the indexing step:
+   ```bash
+   python -m src.pipeline --skip-index
+   ```
+   CI runs this flag automatically as a smoke test, since it has no API key.
+   Each step can also be run on its own: `python -m src.ingestion.run_ingestion`,
+   `python -m src.ingestion.run_chunking`, `python -m src.indexing.build_index`.
+7. Ask a question from the command line:
+   ```bash
+   python -m src.rag.ask "Who is eligible for PM-KISAN?"
+   ```
 
 Run the Streamlit app (once it exists) from the project root with `python -m streamlit run app/main.py`. Using `python -m` puts the project root on the import path so `from src...` imports work.
+
+### Known limitation: scanned pages
+
+A handful of source PDFs include scanned annexures or form templates with no
+extractable text (for example, PMAY-G's later pages). These are detected and
+skipped during ingestion — logged to `logs/ingestion_errors.log` — rather
+than indexed as empty content. OCR support to recover them is not part of
+the current scope.
 
 ## Project layout
 
@@ -44,6 +71,7 @@ Run the Streamlit app (once it exists) from the project root with `python -m str
 |---|---|
 | `documents/` | Source scheme PDFs |
 | `src/config.py` | Settings read from environment variables |
+| `src/pipeline.py` | One-command pipeline: ingest, chunk, build the index |
 | `src/ingestion/` | PDF text extraction and chunking |
 | `src/indexing/` | Embeddings and vector store |
 | `src/rag/` | Retrieval, prompting and answer generation |
