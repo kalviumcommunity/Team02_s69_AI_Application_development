@@ -22,11 +22,28 @@ def _resolve_path(value: str) -> Path:
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
-# OpenAI-compatible API. The key has no default and is never committed.
-LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
+# Embeddings: used to build the vector index and to embed each query at
+# search time. These MUST match — a query embedded with a different model
+# than the one that built the index will not retrieve correctly. Everyone
+# on the team should therefore use the same embedding settings.
+#
+# Default: Google's Gemini embedding model via its OpenAI-compatible
+# endpoint, which has a free tier. Get a key from https://aistudio.google.com/
+# The key has no default and is never committed.
+EMBEDDING_API_KEY = os.getenv("EMBEDDING_API_KEY", "")
+EMBEDDING_BASE_URL = os.getenv(
+    "EMBEDDING_BASE_URL",
+    "https://generativelanguage.googleapis.com/v1beta/openai/",
+)
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
+
+# Chat LLM: used only to generate the final answer text from retrieved
+# context. Unlike embeddings, this does not need to match across teammates
+# — any OpenAI-compatible provider, model and API key works here.
+# The key has no default and is never committed.
+CHAT_API_KEY = os.getenv("CHAT_API_KEY", "")
+CHAT_BASE_URL = os.getenv("CHAT_BASE_URL", "https://api.openai.com/v1")
 CHAT_MODEL = os.getenv("CHAT_MODEL", "gpt-4o-mini")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
 
 # Chunking configuration
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "900"))

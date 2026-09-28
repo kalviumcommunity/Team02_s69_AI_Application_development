@@ -18,9 +18,9 @@ from typing import Any
 from openai import OpenAI
 
 from src.config import (
+    CHAT_API_KEY,
+    CHAT_BASE_URL,
     CHAT_MODEL,
-    LLM_API_KEY,
-    LLM_BASE_URL,
     RAG_CONFIDENCE_THRESHOLD,
 )
 from src.indexing.embedder import OpenAIEmbedder
@@ -168,12 +168,16 @@ class QuestionAnswerer:
 
 def answer_question(query: str) -> dict:
     """Answer a question using the persistent SchemeLens AI index."""
-    if not LLM_API_KEY:
+    if not CHAT_API_KEY:
         raise ValueError(
-            "LLM_API_KEY is not configured. "
+            "CHAT_API_KEY is not configured. "
             "Set it in the local .env file."
         )
 
+    # OpenAIEmbedder raises its own clear error if EMBEDDING_API_KEY is
+    # missing. It is a separate credential from the chat LLM above: the
+    # embedding model must match whatever built the index, while the chat
+    # model can be any OpenAI-compatible provider a teammate has a key for.
     embedder = OpenAIEmbedder()
 
     vector_store = VectorStore(
@@ -181,8 +185,8 @@ def answer_question(query: str) -> dict:
     )
 
     client = OpenAI(
-        api_key=LLM_API_KEY,
-        base_url=LLM_BASE_URL,
+        api_key=CHAT_API_KEY,
+        base_url=CHAT_BASE_URL,
     )
 
     answerer = QuestionAnswerer(

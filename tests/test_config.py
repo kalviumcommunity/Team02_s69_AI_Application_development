@@ -11,8 +11,10 @@ def test_paths_are_absolute():
 
 def test_settings_have_expected_types():
     assert isinstance(config.PROJECT_ROOT, Path)
-    assert isinstance(config.LLM_API_KEY, str)
-    assert config.LLM_BASE_URL
+    assert isinstance(config.EMBEDDING_API_KEY, str)
+    assert isinstance(config.CHAT_API_KEY, str)
+    assert config.EMBEDDING_BASE_URL
+    assert config.CHAT_BASE_URL
     assert config.CHAT_MODEL
     assert config.EMBEDDING_MODEL
 

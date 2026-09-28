@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import fitz
+import pymupdf as fitz
 
 from src.ingestion.pdf_loader import load_pdf
 

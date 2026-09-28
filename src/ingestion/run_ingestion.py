@@ -3,12 +3,27 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from src.ingestion.pdf_loader import (
     load_pdf,
     load_scheme_metadata,
 )
+
+
+def _ensure_utf8_stdout() -> None:
+    """Make printed filenames with accented dashes safe on any console.
+
+    Windows consoles do not always default to UTF-8. Without this, printing
+    a scheme PDF's filename (several contain en/em dashes) can raise
+    ``UnicodeEncodeError`` or render as replacement characters depending on
+    the terminal's code page.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8", errors="replace")
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +36,8 @@ LOG_PATH = PROJECT_ROOT / "logs" / "ingestion_errors.log"
 
 def main() -> None:
     """Process all PDFs in the documents directory."""
+    _ensure_utf8_stdout()
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
