@@ -1,4 +1,4 @@
-from src.rag.answerer import QuestionAnswerer
+from src.rag.answer import QuestionAnswerer
 
 
 class FakeMessage:
