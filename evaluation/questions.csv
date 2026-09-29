@@ -1,0 +1,12 @@
+question_id,question_text,expected_scheme_id,expected_citation,category
+q01,Is a landholding farmer's family that owns cultivable land eligible for PM-KISAN?,pmkisan,"PM-KISAN, page 2",clear-eligible
+q02,Is a household living in a pucca house with three rooms eligible for PMAY-G?,pmay_g,"PMAY-G, page 92 (Annexure-I)",clear-ineligible
+q03,What is the maximum annual family income to qualify for the National Means-cum-Merit Scholarship?,nsp_prematric,"National Scholarship Portal — Pre-Matric Scheme, page 4",clear-eligible
+q04,What is the maximum project cost eligible for a PMEGP subsidy in the manufacturing sector?,pmegp,"PMEGP, page 5",clear-eligible
+q05,Can a family that already owns a pucca house elsewhere in India get a house under PMAY-U?,pmay_u,"PMAY-U, page 13",clear-ineligible
+q06,Who is eligible for coverage under Ayushman Bharat PM-JAY?,pmjay,"Ayushman Bharat – PM-JAY, page 6",clear-eligible
+q07,Which households were targeted for free LPG connections under PM Ujjwala Yojana?,pmuy,"PM Ujjwala Yojana, page 5",clear-eligible
+q08,How does Atal Pension Yojana handle subscriber grievances?,apy,"Atal Pension Yojana, page 3",ambiguous
+q09,What is the income limit for PM-KISAN eligibility?,pmkisan,"PM-KISAN, page 3 (no single income limit — exclusion is by category: income-tax payers, pension threshold, etc.)",ambiguous
+q10,What is the capital of France?,,,out-of-corpus
+q11,What is tomorrow's weather forecast?,,,out-of-corpus

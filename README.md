@@ -73,14 +73,21 @@ Requires Python 3.10 or newer.
 
 **Done:** PDF ingestion, chunking, embeddings/vector index, cited Q&A
 with an insufficient-information refusal path, the Streamlit app
-(citizen chat + helpdesk source view), and verified eligibility rules
-for PM-KISAN and PMAY-G (`data/rules/`).
+(citizen chat + helpdesk source view), verified eligibility rules for
+PM-KISAN and PMAY-G (`data/rules/`), and a starter evaluation question
+set covering all 8 schemes (`evaluation/questions.csv`) with a retrieval
+hit-rate / refusal-rate script (`python -m evaluation.run_eval`).
 
 **Known gaps:** the eligibility checker itself (matching a citizen's
 profile against `data/rules/`) hasn't been built yet, only the rule
 data. Eligibility rules exist for 2 of the 8 schemes so far. Retrieval
 confidence threshold calibration (see below) is based on a handful of
-manual spot checks, not a real evaluation set.
+manual spot checks, not a real evaluation set. The evaluation script
+itself hasn't produced a real baseline run yet — it was written and its
+logic is unit-tested, but the first live run hit an exhausted daily
+free-tier quota on the embedding provider before finishing; whoever
+runs it next with quota available should update this section with the
+actual hit rate and refusal rate.
 
 **Next:** an evaluation question set and a retrieval-accuracy check
 script, then the eligibility checker itself.
