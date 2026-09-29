@@ -61,8 +61,29 @@ Requires Python 3.10 or newer.
    ```bash
    python -m src.rag.ask "Who is eligible for PM-KISAN?"
    ```
+8. Run the app (has a Citizen Chat tab and a Helpdesk View tab that also
+   shows the retrieved source passages behind each answer):
+   ```bash
+   python -m streamlit run app/main.py
+   ```
+   Using `python -m` puts the project root on the import path so
+   `from src...` imports work regardless of the working directory.
 
-Run the Streamlit app (once it exists) from the project root with `python -m streamlit run app/main.py`. Using `python -m` puts the project root on the import path so `from src...` imports work.
+### Current status
+
+**Done:** PDF ingestion, chunking, embeddings/vector index, cited Q&A
+with an insufficient-information refusal path, the Streamlit app
+(citizen chat + helpdesk source view), and verified eligibility rules
+for PM-KISAN and PMAY-G (`data/rules/`).
+
+**Known gaps:** the eligibility checker itself (matching a citizen's
+profile against `data/rules/`) hasn't been built yet, only the rule
+data. Eligibility rules exist for 2 of the 8 schemes so far. Retrieval
+confidence threshold calibration (see below) is based on a handful of
+manual spot checks, not a real evaluation set.
+
+**Next:** an evaluation question set and a retrieval-accuracy check
+script, then the eligibility checker itself.
 
 ### API keys
 
