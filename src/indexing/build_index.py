@@ -65,7 +65,7 @@ def main() -> None:
     embedder = OpenAIEmbedder()
     vector_store = VectorStore(embedder=embedder)
 
-    print("Resetting vector collection...")
+    print("Resetting vector index...")
     vector_store.reset()
 
     print("Generating embeddings...")
@@ -75,7 +75,7 @@ def main() -> None:
 
     print(f"Generated {len(embeddings)} embeddings.")
 
-    print("Adding chunks to ChromaDB...")
+    print("Adding chunks to the vector index...")
 
     vector_store.add_chunks(
         chunks=chunks,
@@ -84,7 +84,7 @@ def main() -> None:
 
     print("Index build complete.")
     print(f"Indexed {len(chunks)} chunks.")
-    print("Vector database: data/chroma")
+    print(f"Vector index: {vector_store.persist_directory}")
 
 
 if __name__ == "__main__":

@@ -8,8 +8,16 @@ __pycache__/
 .coverage
 htmlcov/
 
+# Virtual environments: matches .venv/, venv/, .venv312/, env/, etc. —
+# any name, not just the exact ones we happen to use, so a differently
+# named venv can never get committed by accident again.
+.venv*/
+venv*/
+env/
+
 # Generated data: ignore build output, keep reviewed files
-# (data/schemes.json and data/rules/ stay trackable; the vector DB lives in data/chroma/)
+# (data/schemes.json and data/rules/ stay trackable; the vector index
+# lives in data/vector_index/, as plain .npy/.jsonl files — not a database)
 data/*
 !data/.gitkeep
 !data/schemes.json

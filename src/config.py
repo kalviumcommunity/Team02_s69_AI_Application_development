@@ -56,6 +56,8 @@ RAG_CONFIDENCE_THRESHOLD = float(
 
 # Paths
 DOCS_DIR = _resolve_path(os.getenv("DOCS_DIR", "documents"))
-VECTOR_DB_DIR = _resolve_path(os.getenv("VECTOR_DB_DIR", "data/chroma"))
+VECTOR_DB_DIR = _resolve_path(
+    os.getenv("VECTOR_DB_DIR", "data/vector_index")
+)
 DATA_DIR = PROJECT_ROOT / "data"
 LOGS_DIR = PROJECT_ROOT / "logs"

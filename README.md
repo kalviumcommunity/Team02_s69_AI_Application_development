@@ -6,7 +6,8 @@ Team 02 · Squad 69 · Alliance campus · Sem 5, Sprint 2
 
 ## Setup
 
-Requires Python 3.10 or newer.
+Requires Python 3.12 or newer (numpy 2.5.3 has no prebuilt wheel, and thus
+needs a C compiler to install from source, on anything older).
 
 1. Clone the repository and enter it:
    ```bash
