@@ -1,0 +1,88 @@
+{
+  "scheme_id": "pmkisan",
+  "source_document": "PM-KISAN (Pradhan Mantri Kisan Samman Nidhi).pdf",
+  "rules": [
+    {
+      "rule_id": "pmkisan-land-01",
+      "scheme_id": "pmkisan",
+      "rule_type": "land",
+      "condition": "The farmer's family (husband, wife, minor children) owns cultivable land as per the land records of the concerned State/UT.",
+      "operator": "==",
+      "threshold_value": "true",
+      "unit": "boolean",
+      "source_page": 2,
+      "verified": true
+    },
+    {
+      "rule_id": "pmkisan-land-02",
+      "scheme_id": "pmkisan",
+      "rule_type": "land",
+      "condition": "The land is held by an institution rather than an individual/family (institutional land holders are excluded).",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 2,
+      "verified": true
+    },
+    {
+      "rule_id": "pmkisan-income-01",
+      "scheme_id": "pmkisan",
+      "rule_type": "income",
+      "condition": "Any member of the family paid income tax in the last assessment year.",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 3,
+      "verified": true
+    },
+    {
+      "rule_id": "pmkisan-income-02",
+      "scheme_id": "pmkisan",
+      "rule_type": "income",
+      "condition": "If a family member is a superannuated/retired pensioner, their monthly pension (excluding Multi Tasking Staff / Class IV / Group D employees).",
+      "operator": "<",
+      "threshold_value": "10000",
+      "unit": "INR/month",
+      "source_page": 3,
+      "verified": true
+    },
+    {
+      "rule_id": "pmkisan-category-01",
+      "scheme_id": "pmkisan",
+      "rule_type": "category",
+      "condition": "A family member is a former/present holder of a constitutional post, Minister/State Minister, MP/MLA/MLC, Mayor of a Municipal Corporation, or Chairperson of a District Panchayat.",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 3,
+      "verified": true
+    },
+    {
+      "rule_id": "pmkisan-category-02",
+      "scheme_id": "pmkisan",
+      "rule_type": "category",
+      "condition": "A family member is a serving or retired officer/employee of Central/State Government Ministries, Offices, Departments, PSEs, or Local Bodies (excludes Multi Tasking Staff / Class IV / Group D employees).",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 3,
+      "verified": true
+    },
+    {
+      "rule_id": "pmkisan-category-03",
+      "scheme_id": "pmkisan",
+      "rule_type": "category",
+      "condition": "A family member is a practicing professional (Doctor, Engineer, Lawyer, Chartered Accountant, or Architect) registered with a professional body.",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 3,
+      "verified": true
+    }
+  ],
+  "notes": [
+    "For new beneficiaries, Non-Resident Indian (NRI) land-holding families are excluded (page 3). Not modelled as a rule because it depends on residency/citizenship status, which the eligibility checker's profile fields (income, land, category, location, age) do not currently capture.",
+    "Special alternate eligibility mechanisms apply in parts of the North-East (Manipur, Nagaland, community land ownership) and Jharkhand (Vanshavali/lineage-based verification) — pages 5–6. Not modelled as they are procedural/regional exceptions, not eligibility thresholds.",
+    "Benefit amount (Rs.6000/year in 3 installments) and the 01.02.2019 eligibility cut-off date (page 2–3) are scheme facts, not eligibility criteria for the checker."
+  ]
+}
