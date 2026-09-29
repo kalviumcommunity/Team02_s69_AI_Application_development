@@ -1,0 +1,89 @@
+{
+  "scheme_id": "pmay_g",
+  "source_document": "PMAY-G (Pradhan Mantri Awas Yojana – Gramin).pdf",
+  "rules": [
+    {
+      "rule_id": "pmayg-category-01",
+      "scheme_id": "pmay_g",
+      "rule_type": "category",
+      "condition": "Household lives in a house with a pucca roof and/or pucca wall, or in a house with more than 2 rooms (Annexure-I, Step 1: households meeting this are filtered out before any other check).",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 92,
+      "verified": true
+    },
+    {
+      "rule_id": "pmayg-land-01",
+      "scheme_id": "pmay_g",
+      "rule_type": "land",
+      "condition": "Owns 2.5 acres or more of irrigated land with at least one irrigation equipment (Annexure-I automatic-exclusion parameter 11).",
+      "operator": "<",
+      "threshold_value": "2.5",
+      "unit": "acres",
+      "source_page": 92,
+      "verified": true
+    },
+    {
+      "rule_id": "pmayg-land-02",
+      "scheme_id": "pmay_g",
+      "rule_type": "land",
+      "condition": "Owns 5 acres or more of irrigated land used for two or more crop seasons (Annexure-I automatic-exclusion parameter 12).",
+      "operator": "<",
+      "threshold_value": "5",
+      "unit": "acres",
+      "source_page": 92,
+      "verified": true
+    },
+    {
+      "rule_id": "pmayg-land-03",
+      "scheme_id": "pmay_g",
+      "rule_type": "land",
+      "condition": "Owns 7.5 acres or more of land with at least one irrigation equipment (Annexure-I automatic-exclusion parameter 13).",
+      "operator": "<",
+      "threshold_value": "7.5",
+      "unit": "acres",
+      "source_page": 92,
+      "verified": true
+    },
+    {
+      "rule_id": "pmayg-income-01",
+      "scheme_id": "pmay_g",
+      "rule_type": "income",
+      "condition": "Any family member earns more than Rs.10,000 per month (Annexure-I automatic-exclusion parameter 6).",
+      "operator": "<=",
+      "threshold_value": "10000",
+      "unit": "INR/month",
+      "source_page": 92,
+      "verified": true
+    },
+    {
+      "rule_id": "pmayg-income-02",
+      "scheme_id": "pmay_g",
+      "rule_type": "income",
+      "condition": "Household pays income tax (Annexure-I automatic-exclusion parameter 7).",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 92,
+      "verified": true
+    },
+    {
+      "rule_id": "pmayg-category-02",
+      "scheme_id": "pmay_g",
+      "rule_type": "category",
+      "condition": "Any household member is a Government employee (Annexure-I automatic-exclusion parameter 4).",
+      "operator": "==",
+      "threshold_value": "false",
+      "unit": "boolean",
+      "source_page": 92,
+      "verified": true
+    }
+  ],
+  "notes": [
+    "Core eligibility is primarily SECC 2011 housing-deprivation data verified by Gram Sabhas (page 25, para 4.1.1), not self-declared applicant input — the rules above cover the Annexure-I automatic-exclusion checklist (page 92) that can be approximated from the checker's profile fields.",
+    "Annexure-I automatic-exclusion parameters not modelled (no matching profile field collected): motorised two/three/four-wheeler or fishing boat ownership, mechanised agricultural equipment ownership, Kisan Credit Card with limit ≥Rs.50,000, registered non-agricultural enterprise, paying professional tax, owning a refrigerator, owning a landline phone (page 92).",
+    "60% of the national PMAY-G target is earmarked for SC/ST households (page 22, para 3.4.1) — this affects prioritisation/allocation, not individual eligibility, so it is not modelled as an exclusion rule.",
+    "Automatic-inclusion criteria (shelterless, destitute, manual scavengers, Primitive Tribal Groups, legally released bonded labourers — page 92) grant priority rather than gate eligibility, so they are not modelled as exclusion rules either."
+  ]
+}
