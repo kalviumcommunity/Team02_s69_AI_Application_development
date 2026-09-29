@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from src.rag.answerer import answer_question
+from src.rag.answer import answer_question
 
 
 def main() -> None:
