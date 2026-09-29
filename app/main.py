@@ -24,15 +24,15 @@ st.caption(
 # Cache the answerer and its vector store between reruns.
 @st.cache_resource
 def get_answerer():
-    if not LLM_API_KEY:
+    if not CHAT_API_KEY:
         raise ValueError("API key is not configured.")
 
     embedder = OpenAIEmbedder()
     vector_store = VectorStore(embedder=embedder)
 
     client = OpenAI(
-        api_key=LLM_API_KEY,
-        base_url=LLM_BASE_URL,
+        api_key=CHAT_API_KEY,
+        base_url=CHAT_BASE_URL,
     )
 
     return QuestionAnswerer(
