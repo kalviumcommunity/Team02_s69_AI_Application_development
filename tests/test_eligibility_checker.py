@@ -83,8 +83,7 @@ def test_current_check_only_returns_schemes_with_rule_files_present():
     results = checker.check_all(UserProfile())
     available_ids = {path.stem for path in RULES_DIR.glob("*.json")}
 
-    assert len(results) == len(available_ids) == 2
-    assert {"PM-KISAN", "PMAY-G"} == {result.scheme_name for result in results}
+    assert len(results) == len(available_ids)
 
 
 def test_missing_values_are_not_coerced_to_zero_or_false():

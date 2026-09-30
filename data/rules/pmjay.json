@@ -1,0 +1,22 @@
+{
+  "scheme_id": "pmjay",
+  "source_document": "Ayushman Bharat – PM-JAY.pdf",
+  "rules": [
+    {
+      "rule_id": "pmjay-eligibility-01",
+      "scheme_id": "pmjay",
+      "rule_type": "category",
+      "condition": "PM-JAY eligibility is based on SECC deprivation criteria, automatic inclusion categories, defined occupational categories, and certain existing RSBY beneficiary families.",
+      "operator": "==",
+      "threshold_value": "SECC/RSBY eligibility",
+      "unit": "eligibility_status",
+      "source_page": 5,
+      "verified": false
+    }
+  ],
+  "notes": [
+    "The current profile does not collect the SECC deprivation criteria, automatic-inclusion status, qualifying urban occupation, or RSBY beneficiary status required to determine PM-JAY eligibility.",
+    "The category field cannot safely be used as a proxy for these PM-JAY eligibility criteria.",
+    "No income threshold rule is added because the source eligibility criteria are not represented by the current income field."
+  ]
+}
