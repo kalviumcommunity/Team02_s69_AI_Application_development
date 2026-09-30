@@ -166,3 +166,88 @@ the evaluation question set.
 
 Threshold calibration against a larger evaluation set is deferred to a
 future iteration.
+
+## Eligibility Checker
+
+### Implementation Status
+
+Implemented the Eligibility Checker feature for the citizen-facing application.
+
+The checker allows a citizen to provide their profile information and receive an eligibility result based on the currently available verified scheme rules.
+
+### Implemented
+
+* Added `UserProfile` dataclass with optional fields:
+
+  * Income
+  * Land size in acres
+  * Category
+  * State
+  * Age
+* Added generic eligibility checker logic in `src/eligibility/checker.py`.
+* Added `SchemeResult` and verdict handling:
+
+  * **Eligible**
+  * **Unclear**
+  * **Not Eligible**
+* Implemented rule evaluation using supported operators and threshold values.
+* Missing profile information required by a rule produces **Unclear** instead of making an assumption.
+* Eligibility results are ranked in the following order:
+
+  1. Eligible
+  2. Unclear
+  3. Not Eligible
+* Rule citations and relevant missing fields are preserved in the result.
+* The checker discovers rule files dynamically from `data/rules/`, so additional scheme rule files can be added without changing the checker implementation.
+* Added an **Eligibility Checker** tab to the Streamlit application.
+* Added a structured form for:
+
+  * Income
+  * Land size
+  * Category
+  * State
+  * Age
+* Added a colour-coded results table displaying:
+
+  * Scheme
+  * Verdict
+  * Rule/citation
+  * Missing fields
+* Added automated tests for:
+
+  * Eligibility threshold evaluation
+  * Missing profile fields
+  * Unclear results
+  * Rule citations
+  * Result ranking
+  * Dynamic discovery of available scheme rule files
+  * Protection against treating missing values as zero/false
+
+### Current Rule-Data Status
+
+The Eligibility Checker implementation is designed to support all scheme rule files placed in `data/rules/`.
+
+At the time of this implementation, only the existing rule files were available. The remaining scheme-specific eligibility rule data is being prepared separately and will be added through a separate pull request.
+
+The checker therefore does not hard-code the number of schemes and will automatically include additional rule files when they are added.
+
+### Testing
+
+The following checks were completed:
+
+```text
+python -m pytest
+58 passed, 1 warning
+```
+
+The warning is an existing ChromaDB deprecation warning and is unrelated to the Eligibility Checker implementation.
+
+Additional validation:
+
+```text
+flake8 — passed
+git diff --check — passed
+Streamlit AppTest — passed
+```
+
+The Streamlit application was tested by submitting the Eligibility Checker form and verifying that the results table rendered without application exceptions.
