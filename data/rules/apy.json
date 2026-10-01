@@ -1,0 +1,32 @@
+{
+  "scheme_id": "apy",
+  "source_document": "APY Subscriber Information Brochure / PFRDA APY Eligibility",
+  "rules": [
+    {
+      "rule_id": "apy-age-01",
+      "scheme_id": "apy",
+      "rule_type": "age",
+      "condition": "Individual must be at least 18 years old to join Atal Pension Yojana.",
+      "operator": ">=",
+      "threshold_value": "18",
+      "unit": "years",
+      "source_page": 1,
+      "verified": true
+    },
+    {
+      "rule_id": "apy-age-02",
+      "scheme_id": "apy",
+      "rule_type": "age",
+      "condition": "Individual must be no more than 40 years old to join Atal Pension Yojana.",
+      "operator": "<=",
+      "threshold_value": "40",
+      "unit": "years",
+      "source_page": 1,
+      "verified": true
+    }
+  ],
+  "notes": [
+    "APY also requires the applicant to be an Indian citizen and have a savings bank account or post-office savings bank account. These requirements cannot be evaluated because the current profile does not collect citizenship or bank-account status.",
+    "From 1 October 2022, a citizen who is or has been an income-tax payer is not eligible to open a new APY account. The current profile collects income but does not collect income-tax-payer status, so income is not used as a proxy for this requirement."
+  ]
+}

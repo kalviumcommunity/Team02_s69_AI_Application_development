@@ -1,0 +1,22 @@
+{
+  "scheme_id": "pmay_u",
+  "source_document": "PMAY-U (Pradhan Mantri Awas Yojana – Urban).pdf",
+  "rules": [
+    {
+      "rule_id": "pmay-u-house-01",
+      "scheme_id": "pmay_u",
+      "rule_type": "category",
+      "condition": "Beneficiary family should not own a pucca house in his or her name or in the name of any family member anywhere in India.",
+      "operator": "==",
+      "threshold_value": "no_pucca_house",
+      "unit": "house_ownership_status",
+      "source_page": 13,
+      "verified": false
+    }
+  ],
+  "notes": [
+    "The current profile does not collect house-ownership status, so this condition cannot be evaluated.",
+    "PMAY-U has component-specific income and household requirements. The current profile does not collect enough information to evaluate those requirements reliably.",
+    "The state field alone cannot determine the residency cut-off conditions mentioned in the guidelines."
+  ]
+}

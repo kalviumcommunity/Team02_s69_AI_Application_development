@@ -1,0 +1,23 @@
+{
+  "scheme_id": "pmuy",
+  "source_document": "PM_Ujjawal_Yojana.pdf",
+  "rules": [
+    {
+      "rule_id": "pmuy-age-01",
+      "scheme_id": "pmuy",
+      "rule_type": "age",
+      "condition": "The original PMUY target was adult women from BPL households.",
+      "operator": ">=",
+      "threshold_value": "18",
+      "unit": "years",
+      "source_page": 5,
+      "verified": false
+    }
+  ],
+  "notes": [
+    "Page 5 states that the original PMUY target was deposit-free LPG connections for adult woman members of BPL households.",
+    "The current profile does not collect gender or BPL household status, so these requirements cannot be evaluated.",
+    "The source does not provide an explicit numeric age threshold on page 5; therefore the age rule is marked verified=false and must not be treated as a confirmed eligibility rule.",
+    "Page 6 describes financial support under the scheme and does not provide an additional eligibility condition that can be evaluated using the current profile fields."
+  ]
+}
