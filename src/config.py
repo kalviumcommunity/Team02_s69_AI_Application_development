@@ -51,7 +51,7 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
 
 # RAG confidence configuration
 RAG_CONFIDENCE_THRESHOLD = float(
-    os.getenv("RAG_CONFIDENCE_THRESHOLD", "0.30")
+    os.getenv("RAG_CONFIDENCE_THRESHOLD", "0.40")
 )
 
 # Paths

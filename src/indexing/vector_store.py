@@ -46,6 +46,10 @@ class VectorStore:
             metadata={"hnsw:space": "cosine"},
         )
 
+    def delete_scheme(self, scheme_id: str) -> None:
+        """Remove every vector belonging to one scheme, leaving others intact."""
+        self.collection.delete(where={"scheme_id": scheme_id})
+
     def add_chunks(
         self,
         chunks: list[dict],

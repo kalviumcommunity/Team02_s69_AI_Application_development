@@ -73,3 +73,39 @@ def test_search_filters_by_scheme_id(tmp_path: Path):
         result["metadata"]["scheme_id"] == "pmkisan"
         for result in results
     )
+
+
+def _chunk(chunk_id: str, scheme_id: str, text: str) -> dict:
+    return {
+        "chunk_id": chunk_id,
+        "scheme_id": scheme_id,
+        "scheme_name": scheme_id.upper(),
+        "department": "Test",
+        "section_title": "ELIGIBILITY",
+        "page_number": 1,
+        "text": text,
+    }
+
+
+def test_delete_scheme_removes_only_that_scheme(tmp_path: Path):
+    """Re-indexing one scheme must not disturb another scheme's vectors."""
+    embedder = FakeEmbedder()
+    store = VectorStore(
+        persist_directory=tmp_path / "vector_index", embedder=embedder
+    )
+
+    chunks = [
+        _chunk("a1", "pmkisan", "PM-KISAN eligibility text."),
+        _chunk("b1", "pmay_g", "PMAY-G eligibility text."),
+    ]
+    store.add_chunks(
+        chunks=chunks,
+        embeddings=embedder.embed([c["text"] for c in chunks]),
+    )
+
+    store.delete_scheme("pmkisan")
+
+    remaining = store.search("eligibility", top_k=10)
+    schemes = {r["metadata"]["scheme_id"] for r in remaining}
+
+    assert schemes == {"pmay_g"}

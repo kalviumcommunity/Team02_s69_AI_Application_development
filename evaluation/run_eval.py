@@ -37,6 +37,7 @@ def evaluate_retrieval(question: dict, vector_store: VectorStore) -> dict:
     retrieved_scheme_ids = [r["metadata"]["scheme_id"] for r in results]
 
     hit = question["expected_scheme_id"] in retrieved_scheme_ids
+    top_score = results[0].get("score") if results else None
 
     return {
         "question_id": question["question_id"],
@@ -44,6 +45,7 @@ def evaluate_retrieval(question: dict, vector_store: VectorStore) -> dict:
         "category": question["category"],
         "expected_scheme_id": question["expected_scheme_id"],
         "retrieved_scheme_ids": retrieved_scheme_ids,
+        "top_score": top_score,
         "hit": hit,
     }
 
@@ -53,12 +55,19 @@ def evaluate_refusal(question: dict) -> dict:
     response = answer_question(question["question_text"])
     refused = response["status"] == "insufficient_information"
 
+    top_score = (
+        response["retrieved_chunks"][0]["score"]
+        if response.get("retrieved_chunks")
+        else None
+    )
+
     return {
         "question_id": question["question_id"],
         "question_text": question["question_text"],
         "category": question["category"],
         "refused": refused,
         "status": response["status"],
+        "top_score": top_score,
     }
 
 

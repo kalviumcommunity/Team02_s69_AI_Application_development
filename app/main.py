@@ -1,13 +1,17 @@
 
+import json
+
 import streamlit as st
 from openai import OpenAI
 
-from src.config import CHAT_MODEL, CHAT_API_KEY, CHAT_BASE_URL
+from src.config import CHAT_MODEL, CHAT_API_KEY, CHAT_BASE_URL, DATA_DIR
 from src.indexing.embedder import OpenAIEmbedder
 from src.indexing.vector_store import VectorStore
+from src.query_log import log_feedback, log_unanswered
 from src.rag.answer import QuestionAnswerer
 from src.eligibility.checker import check_all
 from src.eligibility.models import UserProfile
+from src.rag.citations import display_section, unique_citations
 
 
 st.set_page_config(
@@ -44,99 +48,151 @@ def get_answerer():
     )
 
 
-def render_citizen_chat() -> None:
-    """The existing citizen-facing chat, unchanged from issue #11."""
-    # Initialize the chat history.
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+@st.cache_data
+def scheme_source_urls() -> dict[str, str]:
+    """Map scheme name to the official PDF URL, for clickable citations."""
+    with (DATA_DIR / "schemes.json").open("r", encoding="utf-8") as file:
+        schemes = json.load(file)
 
-    # Display previous messages and their citations.
-    for message in st.session_state.messages:
+    return {scheme["scheme_name"]: scheme["source_url"] for scheme in schemes}
+
+
+def _citation_markdown(citation: dict) -> str:
+    """One citation as a link to the source PDF at the cited page."""
+    label = f"{citation['scheme_name']}, page {citation['page']}"
+
+    section = display_section(citation.get("section"))
+
+    if section:
+        label += f", {section}"
+
+    url = scheme_source_urls().get(citation["scheme_name"])
+
+    if url:
+        return f"- [{label}]({url}#page={citation['page']})"
+
+    return f"- {label}"
+
+
+def _render_citations(citations: list[dict]) -> None:
+    citations = unique_citations(citations)
+
+    if not citations:
+        return
+
+    st.markdown("**Sources**")
+
+    for citation in citations:
+        st.markdown(_citation_markdown(citation))
+
+
+def _record_feedback(question: str, rating: str) -> None:
+    """on_click handler: log a thumbs-up or thumbs-down for an answer."""
+    log_feedback(question, rating)
+
+
+def _conversation_history() -> list[dict]:
+    """Prior turns as role/content pairs, for resolving follow-up questions."""
+    return [
+        {"role": message["role"], "content": message["content"]}
+        for message in st.session_state.get("messages", [])
+    ]
+
+
+def _answer(question: str, history: list[dict] | None = None) -> dict:
+    """Run one question through the RAG backend and log refusals."""
+    response = get_answerer().answer_question(question, history=history)
+
+    if response["status"] == "insufficient_information":
+        top_score = (
+            response["retrieved_chunks"][0]["score"]
+            if response.get("retrieved_chunks")
+            else None
+        )
+        log_unanswered(question, top_score)
+
+    return response
+
+
+def render_citizen_chat() -> None:
+    """The citizen-facing chat: follow-ups, citations, and feedback."""
+    st.session_state.setdefault("messages", [])
+
+    for index, message in enumerate(st.session_state.messages):
         with st.chat_message(message["role"]):
             if message.get("insufficient"):
                 st.warning(message["content"])
             else:
                 st.markdown(message["content"])
 
-            if message.get("citations"):
-                st.markdown("**Sources**")
+            if message["role"] == "assistant":
+                _render_citations(message.get("citations", []))
 
-                for citation in message["citations"]:
-                    st.markdown(
-                        f"- **{citation['scheme_name']}** — "
-                        f"Page {citation['page']}, "
-                        f"{citation['section']}"
+                if not message.get("insufficient"):
+                    st.button(
+                        "👍",
+                        key=f"up_{index}",
+                        on_click=_record_feedback,
+                        args=(message["question"], "up"),
+                    )
+                    st.button(
+                        "👎",
+                        key=f"down_{index}",
+                        on_click=_record_feedback,
+                        args=(message["question"], "down"),
                     )
 
-    # Receive the user's question.
     question = st.chat_input("Ask about a government scheme...")
 
-    if question:
-        # Show and save the user's question.
-        st.session_state.messages.append({
-            "role": "user",
-            "content": question,
-        })
+    if not question:
+        return
 
-        with st.chat_message("user"):
-            st.markdown(question)
+    history = _conversation_history()
 
-        # Generate the answer using the existing RAG backend.
-        with st.chat_message("assistant"):
-            try:
-                answerer = get_answerer()
-                response = answerer.answer_question(question)
+    st.session_state.messages.append({"role": "user", "content": question})
 
-                answer = response["answer"]
-                citations = response.get("citations", [])
-                retrieved_chunks = response.get(
-                    "retrieved_chunks", []
-                )
+    with st.chat_message("user"):
+        st.markdown(question)
 
-                # The current backend returns no chunks when it
-                # cannot find sufficient document information.
-                insufficient = not retrieved_chunks
-
-                if insufficient:
-                    st.warning(answer)
-                else:
-                    st.markdown(answer)
-
-                if citations:
-                    st.markdown("**Sources**")
-
-                    for citation in citations:
-                        st.markdown(
-                            f"- **{citation['scheme_name']}** — "
-                            f"Page {citation['page']}, "
-                            f"{citation['section']}"
-                        )
-
-                # Save the assistant's response for future reruns.
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": answer,
-                    "citations": citations,
-                    "insufficient": insufficient,
-                })
-
-            except ValueError as error:
-                if "API key" in str(error):
-                    st.error(
-                        "The AI service is not configured. "
-                        "Please check your API key."
-                    )
-                else:
-                    st.error(
-                        "Unable to process your question. "
-                        "Please check the app configuration."
-                    )
-
-            except Exception:
+    with st.chat_message("assistant"):
+        try:
+            with st.spinner("Checking the scheme documents..."):
+                response = _answer(question, history=history)
+        except ValueError as error:
+            if "API key" in str(error):
                 st.error(
-                    "Something went wrong while answering "
-                    "your question. Please try again."
+                    "The AI service is not configured. "
+                    "Please check your API key."
                 )
+            else:
+                st.error(
+                    "Unable to process your question. "
+                    "Please check the app configuration."
+                )
+            return
+        except Exception:
+            st.error(
+                "Something went wrong while answering "
+                "your question. Please try again."
+            )
+            return
+
+        insufficient = response["status"] == "insufficient_information"
+
+        if insufficient:
+            st.warning(response["answer"])
+        else:
+            st.markdown(response["answer"])
+
+        _render_citations(response["citations"])
+
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response["answer"],
+            "citations": response["citations"],
+            "insufficient": insufficient,
+            "question": question,
+        })
 
 
 def _is_cited(chunk: dict, citations: list[dict]) -> bool:
@@ -179,7 +235,7 @@ def render_helpdesk_view() -> None:
 
     try:
         with st.spinner("Retrieving and answering..."):
-            response = get_answerer().answer_question(question)
+            response = _answer(question)
     except ValueError as error:
         if "API key" in str(error):
             st.error("The AI service is not configured. Please check your API key.")
@@ -195,6 +251,7 @@ def render_helpdesk_view() -> None:
     else:
         st.markdown("**Answer:**")
         st.markdown(response["answer"])
+        _render_citations(response["citations"])
 
     st.divider()
 
