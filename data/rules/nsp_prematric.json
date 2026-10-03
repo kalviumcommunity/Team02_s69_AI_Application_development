@@ -1,0 +1,22 @@
+{
+  "scheme_id": "nsp_prematric",
+  "source_document": "National Scholarship Portal — Pre-Matric Scheme.pdf",
+  "rules": [
+    {
+      "rule_id": "nsp-prematric-income-01",
+      "scheme_id": "nsp_prematric",
+      "rule_type": "income",
+      "condition": "Parental income must not be more than Rs. 3,50,000 per annum from all sources at the time of selection.",
+      "operator": "<=",
+      "threshold_value": "350000",
+      "unit": "INR/year",
+      "source_page": 4,
+      "verified": true
+    }
+  ],
+  "notes": [
+    "The scheme also requires students to be regular students entering class IX in Government, Government-aided or local body schools. The current profile does not collect school type or student class.",
+    "Students in Kendriya Vidyalayas, Jawahar Navodaya Vidyalayas, certain residential schools and private schools are not eligible according to page 4. The current profile does not collect this information.",
+    "Students must have a minimum of 55% marks or equivalent grade in class VII, relaxable by 5% for SC/ST students. The current profile does not collect marks or academic grade information."
+  ]
+}

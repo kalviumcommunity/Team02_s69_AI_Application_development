@@ -9,6 +9,8 @@ from src.indexing.embedder import OpenAIEmbedder
 from src.indexing.vector_store import VectorStore
 from src.query_log import log_feedback, log_unanswered
 from src.rag.answer import QuestionAnswerer
+from src.eligibility.checker import check_all
+from src.eligibility.models import UserProfile
 from src.rag.citations import display_section, unique_citations
 
 
@@ -279,10 +281,111 @@ def render_helpdesk_view() -> None:
             st.text(chunk["chunk"])
 
 
-citizen_tab, helpdesk_tab = st.tabs(["Citizen Chat", "Helpdesk View"])
+def _optional_number(value: str, label: str) -> float | None:
+    """Parse an optional form value without turning blanks into zero."""
+    if not value.strip():
+        return None
+    try:
+        parsed = float(value)
+    except ValueError as error:
+        raise ValueError(f"{label} must be a number or left blank.") from error
+    if parsed < 0:
+        raise ValueError(f"{label} cannot be negative.")
+    return parsed
+
+
+def render_eligibility_checker() -> None:
+    """Collect optional profile facts and display the rule-based results."""
+    st.caption(
+        "Enter what you know. Leave any field blank when you are unsure; "
+        "the checker will report Unclear when that information is needed."
+    )
+
+    with st.form("eligibility_profile"):
+        income_text = st.text_input(
+            "Annual income (INR)",
+            placeholder="Leave blank if unknown",
+            help="Enter annual income in rupees. Do not enter a monthly amount.",
+        )
+        land_text = st.text_input(
+            "Land size (acres)", placeholder="Leave blank if unknown"
+        )
+        category = st.selectbox(
+            "Social category",
+            ["", "General", "OBC", "SC", "ST", "Other"],
+            format_func=lambda value: value or "Select or leave blank",
+        )
+        state = st.text_input("State / Union Territory", placeholder="Optional")
+        age_text = st.text_input("Age (years)", placeholder="Leave blank if unknown")
+        submitted = st.form_submit_button("Check eligibility")
+
+    if not submitted:
+        return
+
+    try:
+        income = _optional_number(income_text, "Annual income")
+        land_acres = _optional_number(land_text, "Land size")
+        age_value = _optional_number(age_text, "Age")
+        if age_value is not None and not age_value.is_integer():
+            raise ValueError("Age must be a whole number or left blank.")
+        profile = UserProfile(
+            income=income,
+            land_acres=land_acres,
+            category=category or None,
+            state=state.strip() or None,
+            age=int(age_value) if age_value is not None else None,
+        )
+    except ValueError as error:
+        st.error(str(error))
+        return
+
+    results = check_all(profile)
+    rows = []
+    for result in results:
+        cited = result.failing_rule or (result.cited_rules[0] if result.cited_rules else None)
+        rows.append({
+            "Scheme": result.scheme_name,
+            "Verdict": result.verdict.value,
+            "Rule cited": (
+                f"{cited['rule_id']}: {cited['condition']}" if cited else "—"
+            ),
+            "Missing fields": ", ".join(result.missing_fields) or "—",
+            "Citation/page": result.citation or "—",
+        })
+
+    import pandas as pd
+
+    frame = pd.DataFrame(rows)
+
+    def verdict_style(value: str) -> str:
+        colors = {
+            "Eligible": "background-color: #d1fae5; color: #065f46; font-weight: bold",
+            "Unclear": "background-color: #fef3c7; color: #92400e; font-weight: bold",
+            "Not Eligible": "background-color: #fee2e2; color: #991b1b; font-weight: bold",
+        }
+        return colors.get(value, "")
+
+    st.dataframe(
+        frame.style.map(verdict_style, subset=["Verdict"]),
+        width="stretch",
+        hide_index=True,
+    )
+
+    for result in results:
+        if result.unresolved_rules:
+            with st.expander(f"Why {result.scheme_name} is unclear"):
+                st.write("; ".join(result.unresolved_rules))
+
+
+citizen_tab, helpdesk_tab, eligibility_tab = st.tabs([
+    "Citizen Chat", "Helpdesk View", "Eligibility Checker"
+])
 
 with citizen_tab:
     render_citizen_chat()
 
 with helpdesk_tab:
     render_helpdesk_view()
+
+with eligibility_tab:
+    render_eligibility_checker()

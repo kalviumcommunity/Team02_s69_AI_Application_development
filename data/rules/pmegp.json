@@ -1,0 +1,23 @@
+{
+  "scheme_id": "pmegp",
+  "source_document": "PMEGP (PM Employment Generation Programme).pdf",
+  "rules": [
+    {
+      "rule_id": "pmegp-age-01",
+      "scheme_id": "pmegp",
+      "rule_type": "age",
+      "condition": "Individual must be above 18 years of age for PMEGP new enterprises.",
+      "operator": ">",
+      "threshold_value": "18",
+      "unit": "years",
+      "source_page": 5,
+      "verified": true
+    }
+  ],
+  "notes": [
+    "There is no income ceiling for assistance under PMEGP, so no income threshold rule is added.",
+    "For projects costing above Rs.10 lakh in Manufacturing and above Rs.5 lakh in Business/Service, the beneficiary must possess at least VIII standard pass educational qualification (page 6). The current profile does not collect education qualification.",
+    "PMEGP assistance is available only for new projects. Existing units and units that have already availed Government subsidy under another Government scheme are not eligible (page 6). The current profile does not collect existing-unit or previous-subsidy status.",
+    "Project-cost limits and sector-specific conditions cannot be evaluated because the current profile does not collect project cost or project sector."
+  ]
+}
