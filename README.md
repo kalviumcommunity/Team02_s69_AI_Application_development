@@ -71,26 +71,28 @@ Requires Python 3.10 or newer.
 
 ### Current status
 
-**Done:** PDF ingestion, chunking, embeddings/vector index, cited Q&A
-with an insufficient-information refusal path, the Streamlit app
-(citizen chat + helpdesk source view), verified eligibility rules for
-PM-KISAN and PMAY-G (`data/rules/`), and a starter evaluation question
-set covering all 8 schemes (`evaluation/questions.csv`) with a retrieval
-hit-rate / refusal-rate script (`python -m evaluation.run_eval`).
+**Done:** PDF ingestion, chunking, embeddings and vector index (with
+duplicate removal, and single-scheme re-indexing via
+`python -m src.indexing.build_index --scheme <scheme_id>`), cited Q&A with
+an insufficient-information refusal path, follow-up questions using
+conversation context, the Streamlit app (citizen chat with clickable
+sources and thumbs feedback, helpdesk source view), unanswered-query and
+feedback logs (`logs/`), verified eligibility rules for PM-KISAN and
+PMAY-G (`data/rules/`), and an evaluation question set covering all 8
+schemes.
+
+**Evaluation (latest run, 11 questions):**
+- Retrieval hit rate: 9 of 9 in-corpus questions retrieved the expected
+  scheme in the top 5 (100%, PRD target 85%).
+- Refusal rate: 2 of 2 out-of-corpus questions refused (100%, PRD target 100%).
+- Results are saved to `evaluation/results.json`.
 
 **Known gaps:** the eligibility checker itself (matching a citizen's
-profile against `data/rules/`) hasn't been built yet, only the rule
-data. Eligibility rules exist for 2 of the 8 schemes so far. Retrieval
-confidence threshold calibration (see below) is based on a handful of
-manual spot checks, not a real evaluation set. The evaluation script
-itself hasn't produced a real baseline run yet — it was written and its
-logic is unit-tested, but the first live run hit an exhausted daily
-free-tier quota on the embedding provider before finishing; whoever
-runs it next with quota available should update this section with the
-actual hit rate and refusal rate.
+profile against `data/rules/`) hasn't been built yet. Eligibility rules
+exist for 2 of the 8 schemes. The evaluation set is small (11 questions),
+so these numbers are a baseline rather than a full accuracy claim.
 
-**Next:** an evaluation question set and a retrieval-accuracy check
-script, then the eligibility checker itself.
+**Next:** the eligibility checker, then rules for the remaining schemes.
 
 ### API keys
 
@@ -139,30 +141,29 @@ GitHub Actions runs `flake8` and `pytest` on every push and pull request to `mai
 
 ## RAG Confidence Guardrails
 
-SchemeLens AI uses a configurable retrieval-confidence threshold to avoid
-sending weakly related questions to the language model.
+SchemeLens AI uses a retrieval-confidence threshold to avoid sending weakly
+related questions to the language model. If the best-matching chunk scores
+below it, the system returns an `insufficient_information` response without
+calling the LLM. The response is also refused if the generated answer has
+no valid citation.
 
-The initial threshold is set to `0.30` in `src/config.py`.
+The threshold is `RAG_CONFIDENCE_THRESHOLD`, default **0.40**
+(`src/config.py`).
 
-This starting value was selected by testing representative in-scope and
-off-topic queries. PM-KISAN and PMAY-G queries produced scores above the
-threshold, while clearly unrelated questions such as weather and general
-knowledge queries produced lower scores.
+**How it was set.** The top retrieval score was measured for every
+evaluation question, using the current embedding model:
 
-If the highest retrieved chunk score is below the threshold, the system
-returns an `insufficient_information` response without calling the LLM.
+| Question type | Top scores |
+|---|---|
+| Answerable (in-corpus, 9 questions) | 0.51 to 0.66 |
+| Off-topic (weather, cricket, cake, and others) | 0.09 to 0.24 |
 
-The system also checks the generated response for citations. If no valid
-citation is present, the response is converted to the same
-`insufficient_information` response.
+0.40 sits between the two groups, with a margin of about 0.16 on each side.
+The earlier default of 0.30 was chosen before the current embedding model and
+would have left only about 0.06 of margin on the off-topic side.
 
-**⚠ This threshold was calibrated against the OpenAI `text-embedding-3-small`
-model.** Since the default embedding model changed to Google's
-`gemini-embedding-001`, different similarity-score distributions are likely
-— a threshold tuned for one embedding model is not guaranteed to behave the
-same way on another. Re-run the same in-scope/off-topic spot checks against
-the new default before trusting this threshold, ideally as part of building
-the evaluation question set.
+**Re-check it when the embedding model changes.** Scores depend on the
+embedding model. `python -m evaluation.run_eval` records each question's
+`top_score` in `evaluation/results.json`, so the same check can be repeated
+after a model change before trusting the threshold.
 
-Threshold calibration against a larger evaluation set is deferred to a
-future iteration.

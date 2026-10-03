@@ -26,6 +26,7 @@ from src.config import (
 from src.indexing.embedder import OpenAIEmbedder
 from src.indexing.vector_store import VectorStore
 from src.rag.guardrails import is_low_confidence
+from src.rag.history import rewrite_with_history
 from src.rag.prompt import SYSTEM_PROMPT, build_user_prompt
 
 
@@ -51,8 +52,24 @@ class QuestionAnswerer:
         self.llm_client = llm_client
         self.model = model
 
-    def answer_question(self, query: str) -> dict:
-        """Retrieve context, generate an answer, and build citations."""
+    def answer_question(
+        self,
+        query: str,
+        history: list[dict] | None = None,
+    ) -> dict:
+        """Retrieve context, generate an answer, and build citations.
+
+        ``history`` is the prior conversation as ``{"role", "content"}``
+        dicts. When given, a follow-up question is first rewritten into a
+        standalone one so retrieval knows which scheme it refers to.
+        """
+        query = rewrite_with_history(
+            self.llm_client,
+            self.model,
+            query,
+            history,
+        )
+
         retrieved_chunks = self.vector_store.search(
             query,
             top_k=5,
@@ -166,7 +183,7 @@ class QuestionAnswerer:
         return citations
 
 
-def answer_question(query: str) -> dict:
+def answer_question(query: str, history: list[dict] | None = None) -> dict:
     """Answer a question using the persistent SchemeLens AI index."""
     if not CHAT_API_KEY:
         raise ValueError(
@@ -194,4 +211,4 @@ def answer_question(query: str) -> dict:
         llm_client=client,
     )
 
-    return answerer.answer_question(query)
+    return answerer.answer_question(query, history=history)

@@ -1,0 +1,148 @@
+{
+  "hit_rate": 1.0,
+  "refusal_rate": 1.0,
+  "retrieval_results": [
+    {
+      "question_id": "q01",
+      "question_text": "Is a landholding farmer's family that owns cultivable land eligible for PM-KISAN?",
+      "category": "clear-eligible",
+      "expected_scheme_id": "pmkisan",
+      "retrieved_scheme_ids": [
+        "pmkisan",
+        "pmkisan",
+        "pmkisan",
+        "pmkisan",
+        "pmkisan"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q02",
+      "question_text": "Is a household living in a pucca house with three rooms eligible for PMAY-G?",
+      "category": "clear-ineligible",
+      "expected_scheme_id": "pmay_g",
+      "retrieved_scheme_ids": [
+        "pmay_g",
+        "pmay_g",
+        "pmay_u",
+        "pmay_g",
+        "pmay_g"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q03",
+      "question_text": "What is the maximum annual family income to qualify for the National Means-cum-Merit Scholarship?",
+      "category": "clear-eligible",
+      "expected_scheme_id": "nsp_prematric",
+      "retrieved_scheme_ids": [
+        "nsp_prematric",
+        "nsp_prematric",
+        "nsp_prematric",
+        "nsp_prematric",
+        "nsp_prematric"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q04",
+      "question_text": "What is the maximum project cost eligible for a PMEGP subsidy in the manufacturing sector?",
+      "category": "clear-eligible",
+      "expected_scheme_id": "pmegp",
+      "retrieved_scheme_ids": [
+        "pmegp",
+        "pmegp",
+        "pmegp",
+        "pmegp",
+        "pmegp"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q05",
+      "question_text": "Can a family that already owns a pucca house elsewhere in India get a house under PMAY-U?",
+      "category": "clear-ineligible",
+      "expected_scheme_id": "pmay_u",
+      "retrieved_scheme_ids": [
+        "pmay_u",
+        "pmay_u",
+        "pmay_u",
+        "pmay_u",
+        "pmay_u"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q06",
+      "question_text": "Who is eligible for coverage under Ayushman Bharat PM-JAY?",
+      "category": "clear-eligible",
+      "expected_scheme_id": "pmjay",
+      "retrieved_scheme_ids": [
+        "pmjay",
+        "pmjay",
+        "pmjay",
+        "pmjay",
+        "pmjay"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q07",
+      "question_text": "Which households were targeted for free LPG connections under PM Ujjwala Yojana?",
+      "category": "clear-eligible",
+      "expected_scheme_id": "pmuy",
+      "retrieved_scheme_ids": [
+        "pmuy",
+        "pmuy",
+        "pmuy",
+        "pmuy",
+        "pmuy"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q08",
+      "question_text": "How does Atal Pension Yojana handle subscriber grievances?",
+      "category": "ambiguous",
+      "expected_scheme_id": "apy",
+      "retrieved_scheme_ids": [
+        "apy",
+        "apy",
+        "apy",
+        "apy",
+        "apy"
+      ],
+      "hit": true
+    },
+    {
+      "question_id": "q09",
+      "question_text": "What is the income limit for PM-KISAN eligibility?",
+      "category": "ambiguous",
+      "expected_scheme_id": "pmkisan",
+      "retrieved_scheme_ids": [
+        "pmkisan",
+        "pmkisan",
+        "pmkisan",
+        "pmkisan",
+        "pmkisan"
+      ],
+      "hit": true
+    }
+  ],
+  "refusal_results": [
+    {
+      "question_id": "q10",
+      "question_text": "What is the capital of France?",
+      "category": "out-of-corpus",
+      "refused": true,
+      "status": "insufficient_information"
+    },
+    {
+      "question_id": "q11",
+      "question_text": "What is tomorrow's weather forecast?",
+      "category": "out-of-corpus",
+      "refused": true,
+      "status": "insufficient_information"
+    }
+  ]
+}
